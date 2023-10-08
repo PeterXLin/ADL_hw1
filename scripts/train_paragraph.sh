@@ -10,7 +10,7 @@ python run_swag_no_trainer.py \
   --checkpointing_steps epoch \
   --with_tracking \
   --gradient_accumulation_steps 2 \
+  --train_file "./data/train.json" \
+  --validation_file "./data/valid.json" \
   #  --resume_from_checkpoint ./checkpoint/paragraph_select/bert_chinese/epoch_3 \
-  # --train_file "./data/train.json" \
-  # --validation_file "./data/valid.json" \
   # "--resume_from_checkpoint",

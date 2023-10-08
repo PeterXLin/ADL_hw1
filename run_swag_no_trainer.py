@@ -32,7 +32,6 @@ from typing import Optional, Union
 import datasets
 import evaluate
 import torch
-import wandb
 from accelerate import Accelerator
 from accelerate.logging import get_logger
 from accelerate.utils import set_seed
@@ -298,13 +297,6 @@ def main():
     # If we're using tracking, we also need to initialize it here and it will by default pick up all supported trackers
     # in the environment
     accelerator_log_kwargs = {}
-
-    # set up wandb 
-    
-
-    
-
-    # wandb.login(key = "36ae027aebbfd555d49fe2bcd286f17a6f77c0e4")
 
     if args.with_tracking:
         accelerator_log_kwargs["log_with"] = args.report_to

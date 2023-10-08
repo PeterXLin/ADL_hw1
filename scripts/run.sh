@@ -3,8 +3,8 @@
 # example
 # bash ./run.sh /path/to/context.json /path/to/test.json /path/to/pred/prediction.csv
 
-context_path=$1
-test_path=$2
-output_path=$3
+# context_path=$1
+# test_path=$2
+# output_path=$3
 
-python predict.py 
+python ./code/select_paragraph_predict.py --context_path "./data/context.json" --test_path "./data/test.json" --output_path "./data/first_predict.csv"
