@@ -45,9 +45,16 @@ def parse_args():
         default=512,
     )
     parser.add_argument(
-        "--model_name_or_path",
+        "--paragraph_select_model_path",
         type=str,
         default=None,
+        help="The directory where model config, tokenizer config, model bin saved. (e.g. checkpoint/paragraph_select/xlnet)",
+    )
+    parser.add_argument(
+        "--question_answering_model_path",
+        type=str,
+        default=None,
+        help="The directory where model config, tokenizer config, model bin saved.",
     )
     parser.add_argument(
         "--batch_size",
@@ -63,7 +70,7 @@ def parse_args():
     parser.add_argument(
         "--max_answer_length",
         type=int,
-        default = 128,
+        default = 30,
     )
     parser.add_argument(
         "--pad_to_max_length",
@@ -88,7 +95,6 @@ def parse_args():
 
 def main():
     args = parse_args()
-
     with open(args.context_path) as f:
         context_data = json.load(f)
 
@@ -105,9 +111,12 @@ def paragraph_select(args, context_data):
     # prompt = "How the weather today?"
     # candidate2 = "My name is Pekora."
     # candidate1 = "It's sunny outside."
-    model_path = "/nfs/nas-6.1/whlin/ADL/2023_ADL_HW1/checkpoint/paragraph_select/xlnet_base"
+    if args.paragraph_select_model_path != None:
+        model_path = os.path.join(os.getcwd(), args.paragraph_select_model_path)
+    else:
+        model_path = "/nfs/nas-6.1/whlin/ADL/2023_ADL_HW1/checkpoint/for_predict/paragraph/"
 
-
+    print("paragraph_select_model_path: ", model_path)
     # -------------------------- prepare dataset
 
     # load raw dataset
@@ -231,7 +240,13 @@ def create_and_fill_np_array(start_or_end_logits, dataset, max_len):
 def question_answering(args, context_data, raw_datasets):
     accelerator = Accelerator()
     accelerator.wait_for_everyone()
-    model_path = "/nfs/nas-6.1/whlin/ADL/2023_ADL_HW1/checkpoint/qa/roberta_large/"
+
+    if args.question_answering_model_path != None:
+        model_path = os.path.join(os.getcwd(), args.question_answering_model_path)
+    else:
+        model_path = "/nfs/nas-6.1/whlin/ADL/2023_ADL_HW1/checkpoint/for_predict/qa/"
+    
+    print(model_path)
 
     # prepare dataset
     tokenizer = AutoTokenizer.from_pretrained(model_path)

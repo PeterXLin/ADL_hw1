@@ -31,6 +31,7 @@ import datasets
 import evaluate
 import numpy as np
 import torch
+import torch.nn as nn
 from accelerate import Accelerator
 from accelerate.logging import get_logger
 from accelerate.utils import set_seed
@@ -436,7 +437,12 @@ def main():
     elif args.model_name_or_path:
         config = AutoConfig.from_pretrained(args.model_name_or_path, trust_remote_code=args.trust_remote_code)
     else:
-        config = CONFIG_MAPPING[args.model_type]()
+        config = {
+            "num_hidden_layers": 4,
+            "num_attention_heads": 4,
+            "hidden_size": 512,
+        }
+        config = CONFIG_MAPPING[args.model_type](**config)
         logger.warning("You are instantiating a new config instance from scratch.")
 
     if args.tokenizer_name:
@@ -883,7 +889,7 @@ def main():
     for epoch in range(starting_epoch, args.num_train_epochs):
         model.train()
         if args.with_tracking:
-            total_loss = 0
+            train_total_loss = 0
         if args.resume_from_checkpoint and epoch == starting_epoch and resume_step is not None:
             # We skip the first `n` batches in the dataloader when resuming from a checkpoint
             active_dataloader = accelerator.skip_first_batches(train_dataloader, resume_step)
@@ -895,7 +901,7 @@ def main():
                 loss = outputs.loss
                 # We keep track of the loss at each epoch
                 if args.with_tracking:
-                    total_loss += loss.detach().float()
+                    train_total_loss += loss.detach().float()
 
                 accelerator.backward(loss)
                 optimizer.step()
@@ -944,10 +950,10 @@ def main():
         all_end_logits = []
 
         model.eval()
-
         for step, batch in enumerate(eval_dataloader):
             with torch.no_grad():
                 outputs = model(**batch)
+
                 start_logits = outputs.start_logits
                 end_logits = outputs.end_logits
 
@@ -977,7 +983,7 @@ def main():
             accelerator.log(
                 {
                     "squad_v2" if args.version_2_with_negative else "squad": eval_metric,
-                    "train_loss": total_loss.item() / len(train_dataloader),
+                    "train_loss": train_total_loss.item() / len(train_dataloader),
                     "epoch": epoch,
                     "step": completed_steps,
                 },
@@ -1029,7 +1035,7 @@ def main():
     if args.do_predict:
         log = {
             "squad_v2" if args.version_2_with_negative else "squad": eval_metric,
-            "train_loss": total_loss.item() / len(train_dataloader),
+            "train_loss": train_total_loss.item() / len(train_dataloader),
             "epoch": epoch,
             "step": completed_steps,
         }

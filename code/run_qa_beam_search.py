@@ -59,6 +59,7 @@ from transformers.utils.versions import require_version
 # check_min_version("4.35.0.dev0")
 
 # require_version("datasets>=1.8.0", "To fix: pip install -r examples/pytorch/question-answering/requirements.txt")
+os.environ["CUDA_VISIBLE_DEVICES"]="1"
 
 logger = get_logger(__name__)
 
@@ -176,7 +177,7 @@ def parse_args():
         "--num_warmup_steps", type=int, default=0, help="Number of steps for the warmup in the lr scheduler."
     )
     parser.add_argument("--output_dir", type=str, default=None, help="Where to store the final model.")
-    parser.add_argument("--seed", type=int, default=None, help="A seed for reproducible training.")
+    parser.add_argument("--seed", type=int, default=42, help="A seed for reproducible training.")
     parser.add_argument(
         "--doc_stride",
         type=int,

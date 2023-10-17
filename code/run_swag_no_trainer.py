@@ -58,7 +58,7 @@ from transformers.utils import PaddingStrategy, check_min_version, send_example_
 # Will error if the minimal version of Transformers is not installed. Remove at your own risks.
 # check_min_version("4.34.0.dev0")
 
-os.environ["CUDA_VISIBLE_DEVICES"]="1"
+os.environ["CUDA_VISIBLE_DEVICES"]="0"
 
 logger = get_logger(__name__)
 # You should update this to your particular problem to have better documentation of `model_type`

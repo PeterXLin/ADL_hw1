@@ -161,6 +161,8 @@ cython_debug/
 checkpoint/
 data/
 
+checkpoint_for_predict/
+
 # test.ipynb
 # test_for_paragraph.ipynb
 # test_for_qa.ipynb
